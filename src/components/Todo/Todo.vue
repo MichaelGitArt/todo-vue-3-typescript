@@ -18,6 +18,7 @@ import TodoList from "./TodoList.vue";
 import TodoForm from "./TodoForm.vue";
 import { ChangeTodoItem } from "@/types/TodoList";
 import useTodo from "../composables/useTodo";
+import useSortTodo from "../composables/useSortTodo";
 
 export default defineComponent({
   name: "Todo",
@@ -30,6 +31,7 @@ export default defineComponent({
     const { todoList, removeItem, editItem, toggleItem, addItem } = useTodo();
     addItem("First");
     addItem("Second");
+    addItem("Third");
 
     const onToggle = (id: number) => {
       toggleItem(id);
@@ -47,8 +49,9 @@ export default defineComponent({
       addItem(label);
     };
 
+    const { sortedTodoList } = useSortTodo(todoList);
     return {
-      todoList,
+      todoList: sortedTodoList,
 
       onToggle,
       onEdit,
@@ -61,7 +64,8 @@ export default defineComponent({
 
 <style lang="scss">
 .todo {
-  border: 1px solid #000;
+  border: 1px solid #ced4da;
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.2);
   border-radius: 6px;
 }
 </style>
