@@ -16,54 +16,45 @@
 import { defineComponent } from "vue";
 import TodoList from "./TodoList.vue";
 import TodoForm from "./TodoForm.vue";
-import { ChangeTodoItem, ITodoItem, ToggleTodoItem } from "@/types/TodoList";
+import { ChangeTodoItem } from "@/types/TodoList";
+import useTodo from "../composables/useTodo";
 
 export default defineComponent({
   name: "Todo",
-  data: () => ({
-    todoList: [
-      {
-        id: 1,
-        label: "Hello",
-        completed: false
-      }
-    ] as ITodoItem[]
-  }),
-
   components: {
     TodoList,
     TodoForm
   },
-  methods: {
-    onToggle({ id, completed }: ToggleTodoItem) {
-      const item = this.todoList.find(item => item.id === id);
-      if (!item) return;
 
-      item.completed = completed;
-    },
+  setup() {
+    const { todoList, removeItem, editItem, toggleItem, addItem } = useTodo();
+    addItem("First");
+    addItem("Second");
 
-    onEdit({ id, label }: ChangeTodoItem) {
-      const item = this.todoList.find(item => item.id === id);
-      if (!item) return;
+    const onToggle = (id: number) => {
+      toggleItem(id);
+    };
 
-      item.label = label;
-    },
+    const onEdit = (changeObj: ChangeTodoItem) => {
+      editItem(changeObj);
+    };
 
-    onRemove(id: ITodoItem["id"]) {
-      console.log(`🚀 ~ file: Todo.vue ~ line 57 ~ onRemove ~ id`, id);
-      const index = this.todoList.findIndex(item => item.id === id);
-      if (index === -1) return;
+    const onRemove = (id: number) => {
+      removeItem(id);
+    };
 
-      this.todoList.splice(index, 1);
-    },
+    const onCreate = (label: string) => {
+      addItem(label);
+    };
 
-    onCreate(label: string) {
-      this.todoList.push({
-        id: Date.now(),
-        label,
-        completed: false
-      });
-    }
+    return {
+      todoList,
+
+      onToggle,
+      onEdit,
+      onRemove,
+      onCreate
+    };
   }
 });
 </script>

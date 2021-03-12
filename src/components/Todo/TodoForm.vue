@@ -1,32 +1,34 @@
 <template>
-  <div class="">
-    <form @submit.prevent="onSubmit">
-      <input v-model="textfield" type="text" class="form-control" />
-    </form>
-  </div>
+  <form @submit.prevent="onSubmit">
+    <input v-model="textfield" type="text" class="form-control" />
+  </form>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 
 export default defineComponent({
-  name: "Todo",
-  data: () => ({
-    textfield: ""
-  }),
+  name: "TodoForm",
   emits: {
     onCreate(str: string) {
       return str;
     }
   },
 
-  methods: {
-    onSubmit() {
-      if (!this.textfield) return;
+  setup(_, { emit }) {
+    const textfield = ref("");
 
-      this.$emit("onCreate", this.textfield);
-      this.textfield = "";
-    }
+    const onSubmit = () => {
+      if (!textfield.value) return;
+
+      emit("onCreate", textfield.value);
+      textfield.value = "";
+    };
+
+    return {
+      textfield,
+      onSubmit
+    };
   }
 });
 </script>

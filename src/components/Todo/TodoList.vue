@@ -4,7 +4,7 @@
       v-for="item in todoList"
       :key="item.id"
       :item="item"
-      @toggle="onToggle({ id: item.id, completed: $event })"
+      @toggle="onToggle(item.id)"
       @edit="onEdit({ id: item.id, label: $event })"
       @remove="onRemove(item.id)"
     />
@@ -13,11 +13,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
-import {
-  ITodoItem,
-  ChangeTodoItem,
-  ToggleTodoItem
-} from "../../types/TodoList";
+import { ITodoItem, ChangeTodoItem } from "../../types/TodoList";
 import TodoItem from "./TodoItem.vue";
 
 export default defineComponent({
@@ -33,7 +29,7 @@ export default defineComponent({
   },
 
   emits: {
-    toggleItem(payload: ToggleTodoItem) {
+    toggleItem(payload: ITodoItem["id"]) {
       return payload;
     },
     editItem(payload: ChangeTodoItem) {
@@ -44,16 +40,16 @@ export default defineComponent({
     }
   },
 
-  methods: {
-    onToggle(toggleObj: ToggleTodoItem) {
-      this.$emit("toggleItem", toggleObj);
-    },
-    onEdit(changeObj: ChangeTodoItem) {
-      this.$emit("editItem", changeObj);
-    },
-    onRemove(id: ITodoItem["id"]) {
-      this.$emit("removeItem", id);
-    }
+  setup(_, { emit }) {
+    const onToggle = (id: number) => emit("toggleItem", id);
+    const onEdit = (changeObj: ChangeTodoItem) => emit("editItem", changeObj);
+    const onRemove = (id: ITodoItem["id"]) => emit("removeItem", id);
+
+    return {
+      onToggle,
+      onEdit,
+      onRemove
+    };
   }
 });
 </script>

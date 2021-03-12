@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 <template>
-  <template v-if="editing">
+  <template v-if="isEditing">
     <form class="todo-item" @submit.prevent="onEditSave">
-      <input ref="textfield" v-model="edit" type="text" class="form-control" />
+      <input ref="textfield" v-model="text" type="text" class="form-control" />
       <div class="todo-item-btn-group">
         <button
           type="button"
@@ -44,7 +44,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
+import { defineComponent, PropType, ref, nextTick } from "vue";
 import { ITodoItem } from "../../types/TodoList";
 
 export default defineComponent({
@@ -69,41 +69,44 @@ export default defineComponent({
       required: true
     }
   },
-  data: () => ({
-    editing: false,
-    edit: ""
-  }),
-  methods: {
-    onToggle(): void {
-      this.$emit("toggle", !this.item.completed);
-    },
+  setup(props, { emit }) {
+    const isEditing = ref(false);
+    const text = ref("");
 
-    onRemove() {
-      this.$emit("remove", null);
-    },
+    const textfield = ref<HTMLInputElement | null>(null);
 
-    onEdit() {
-      this.editing = true;
-      this.edit = this.item.label;
+    const onToggle = () => emit("toggle", !props.item.completed);
+    const onRemove = () => emit("remove");
+    const onEdit = () => {
+      isEditing.value = true;
+      text.value = props.item.label;
 
-      setTimeout(() => {
-        const input = this.$refs.textfield as HTMLInputElement;
-        input.focus();
-      }, 0);
+      nextTick(() => {
+        if (textfield.value) {
+          textfield.value.focus();
+        }
+      });
+    };
+    const onEditCancel = () => (isEditing.value = false);
+    const onEditSave = () => {
+      if (!text.value) return;
 
-      // Error with this
-      // this.$nextTick(() => {
-      // });
-    },
+      emit("edit", text.value);
+      isEditing.value = false;
+    };
 
-    onEditCancel() {
-      this.editing = false;
-    },
-    onEditSave() {
-      if (!this.edit) return;
-      this.$emit("edit", this.edit);
-      this.editing = false;
-    }
+    return {
+      isEditing,
+      text,
+
+      onToggle,
+      onRemove,
+      onEdit,
+      onEditCancel,
+      onEditSave,
+
+      textfield
+    };
   }
 });
 </script>
