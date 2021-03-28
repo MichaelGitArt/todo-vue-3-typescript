@@ -14,11 +14,11 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import { ChangeTodoItem } from "@/types/TodoList";
+import useTodo from "@/components/composables/useTodo";
+import useSortTodo from "@/components/composables/useSortTodo";
 import TodoList from "./TodoList.vue";
 import TodoForm from "./TodoForm.vue";
-import { ChangeTodoItem } from "@/types/TodoList";
-import useTodo from "../composables/useTodo";
-import useSortTodo from "../composables/useSortTodo";
 
 export default defineComponent({
   name: "Todo",
